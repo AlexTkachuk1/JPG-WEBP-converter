@@ -2,16 +2,22 @@ const fs = require('fs');
 const sharp = require('sharp');
 const sizeOf = require('image-size');
 const jpegAutorotate = require('jpeg-autorotate');
+const tinify = require('tinify');
+tinify.key = 'wVRCqfxcrNLqjjPw1QkgrhC7cF5TvmFx';
 
 //Отсюда берем картинки
 const inputDirectory = 'images';
 const outputDirectory = 'putImage';
 
+const operationKeys = {
+      compress: "compress",
+      convertJpgToWebp: "convert"
+};
+
 const getFiles = (dir, files_) => { // Функция для получения списка файлов из папки
       files_ = files_ || [];
       let files = fs.readdirSync(dir);
       for (let i in files) {
-            // console.log("Привет");
             let name = dir + '/' + files[i];
             if (fs.statSync(name).isDirectory()) {
                   getFiles(name, files_);
@@ -21,8 +27,6 @@ const getFiles = (dir, files_) => { // Функция для получения 
       }
       return files_;
 };
-
-let files = getFiles(inputDirectory);
 
 /**
  * Метод возвращает имя файла (без формата)
@@ -44,7 +48,7 @@ const createDirectory = (directoryPath) => {
 
 const convertToWebP = async (inputPath, outputPath) => {
       return sharp(inputPath)
-            .toFormat('webp', { quality: 55 })
+            .toFormat('webp', { quality: 50 })
             .toFile(outputPath)
             .then(() => {
                   console.log(`Изображение ${inputPath} успешно преобразовано и сохранено в ${outputPath}`);
@@ -76,19 +80,29 @@ const removeMetadata = async (inputPath, outputPath) => {
       }
 };
 
-files.forEach(async (file, index) => {
-      await removeMetadata(file, file);
+const processImages = async (files, operationKey) => {
+      files.forEach(async (file) => {
+            let outputPath = file.replace(`${inputDirectory}`, `${outputDirectory}`);
+            if (operationKey === operationKeys.convertJpgToWebp) outputPath = outputPath.replace(".jpg", ".webp");
 
-      // Определите путь для сохранения webp-изображения
-      const outputPath = file.replace(`${inputDirectory}`, `${outputDirectory}`).replace(".jpg", ".webp");
-      const directoryPath = outputPath.replace(`/${getName(outputPath)}`, '');
+            const directoryPath = outputPath.replace(`/${getName(outputPath)}`, '');
+            createDirectory(directoryPath);
 
-      createDirectory(directoryPath);
+            if (operationKey === operationKeys.compress) {
+                  tinify.fromFile(file).toFile(outputPath, (err) => {
+                        if (err) throw err;
+                        console.log('Image compressed successfully.');
+                  });
+            } else if (operationKey === operationKeys.convertJpgToWebp) {
+                  // Конвертируйте изображение в формат webp
+                  try {
+                        await convertToWebP(file, outputPath);
+                  } catch (error) {
+                        console.log("Обработка ошибок, если конвертация не удалась");
+                  }
+            }
+      });
+};
 
-      // Конвертируйте изображение в формат webp
-      try {
-            await convertToWebP(file, outputPath);
-      } catch (error) {
-            // Обработка ошибок, если конвертация не удалась
-      }
-});
+let files = getFiles(inputDirectory);
+processImages(files, operationKeys.compress);

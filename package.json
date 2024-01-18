@@ -1,0 +1,13 @@
+{
+  "name": "drawing-images",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node provLibwebpjs.js"
+  },
+  "dependencies": {
+    "image-size": "^1.1.1",
+    "jpeg-autorotate": "^9.0.0",
+    "sharp": "^0.33.2",
+    "webp-converter": "^2.3.3"
+  }
+}

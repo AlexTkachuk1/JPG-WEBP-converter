@@ -2,11 +2,9 @@
   "name": "drawing-images",
   "version": "1.0.0",
   "scripts": {
-    "start": "node prov-sharp.js"
+    "start": "node prov.js"
   },
   "dependencies": {
-    "image-size": "^1.1.1",
-    "jpeg-autorotate": "^9.0.0",
     "sharp": "^0.33.2",
     "tinify": "^1.7.1",
     "webp-converter": "^2.3.3"

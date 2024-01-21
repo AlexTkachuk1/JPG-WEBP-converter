@@ -4,11 +4,11 @@ const webp = require('webp-converter');
 const tinify = require('tinify');
 tinify.key = 'wVRCqfxcrNLqjjPw1QkgrhC7cF5TvmFx';
 
-const inputDirectory = 'images';
-const outputDirectory = 'putImage';
-const currentConvertLib = libraryKeys.sharp;
+const INPUT_DIRECTORY = 'INPUT_DIRECTORY';
+const OUTPUT_DIRECTORY = 'OUTPUT_DIRECTORY';
+const CURRENT_CONVERTER_LIB = libraryKeys.sharp;
 // Потеря разрешения изображения при конвертации, 100 не теряет, 50 теряет половину.
-const currentQuality = 50;
+const CURRENT_QUOLITY = 50;
 
 let remainingKeyUsageCount = 0
 
@@ -61,16 +61,16 @@ const createDirectory = (directoryPath) => {
 };
 
 const convertToWebP = async (inputPath, outputPath) => {
-      if (currentConvertLib === libraryKeys.sharp) {
+      if (CURRENT_CONVERTER_LIB === libraryKeys.sharp) {
             return sharp(inputPath)
-                  .toFormat('webp', { quality: currentQuality })
+                  .toFormat('webp', { quality: CURRENT_QUOLITY })
                   .toFile(outputPath)
                   .catch((err) => {
                         console.log(`Ошибка при преобразовании изображения ${inputPath}: ${error}`);
                         throw err;
                   });
       } else {
-            webp.cwebp(file, outputPath, `-q ${currentQuality}`);
+            webp.cwebp(file, outputPath, `-q ${CURRENT_QUOLITY}`);
       }
 };
 
@@ -101,7 +101,7 @@ const keyValidation = async (index = 0) => {
 
 const processImages = async (files, operationKey) => {
       files.forEach(async (file) => {
-            let outputPath = file.replace(`${inputDirectory}`, `${outputDirectory}`);
+            let outputPath = file.replace(`${INPUT_DIRECTORY}`, `${OUTPUT_DIRECTORY}`);
             const fileName = getName(file);
             const directoryPath = outputPath.replace(`/${fileName}`, '');
 
@@ -156,5 +156,5 @@ const processImages = async (files, operationKey) => {
       });
 };
 
-let files = getFiles(inputDirectory);
+let files = getFiles(INPUT_DIRECTORY);
 processImages(files, operationKeys.compress);

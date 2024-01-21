@@ -4,9 +4,14 @@ const webp = require('webp-converter');
 const tinify = require('tinify');
 tinify.key = 'wVRCqfxcrNLqjjPw1QkgrhC7cF5TvmFx';
 
+const libraryKeys = {
+      sharp: "sharp",
+      webp: "webp"
+};
+
 const INPUT_DIRECTORY = 'INPUT_DIRECTORY';
 const OUTPUT_DIRECTORY = 'OUTPUT_DIRECTORY';
-const CURRENT_CONVERTER_LIB = libraryKeys.sharp;
+const CURRENT_CONVERTER_LIB = libraryKeys.webp;
 // Потеря разрешения изображения при конвертации, 100 не теряет, 50 теряет половину.
 const CURRENT_QUOLITY = 50;
 
@@ -24,11 +29,6 @@ const tinifyKeys = [
 const operationKeys = {
       compress: "compress",
       convertJpgToWebp: "convert"
-};
-
-const libraryKeys = {
-      sharp: "sharp",
-      webp: "webp"
 };
 
 const getFiles = (dir, files_) => {
@@ -70,7 +70,7 @@ const convertToWebP = async (inputPath, outputPath) => {
                         throw err;
                   });
       } else {
-            webp.cwebp(file, outputPath, `-q ${CURRENT_QUOLITY}`);
+            webp.cwebp(inputPath, outputPath, `-q ${CURRENT_QUOLITY}`);
       }
 };
 
@@ -157,4 +157,4 @@ const processImages = async (files, operationKey) => {
 };
 
 let files = getFiles(INPUT_DIRECTORY);
-processImages(files, operationKeys.compress);
+processImages(files, operationKeys.convertJpgToWebp);
